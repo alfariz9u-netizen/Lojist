@@ -20,6 +20,12 @@ MANUAL_TYPE_KB = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="📦 عندي حمولة", callback_data="manual:load")],
 ])
 
+# Shown to ADMIN accounts on /start -- gives them one-tap access to the
+# admin panel instead of having to remember/type the /admin command.
+ADMIN_PANEL_KB = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="🛠 لوحة الإدارة", callback_data="adminpanel")],
+])
+
 
 def interest_kb(load_id: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
