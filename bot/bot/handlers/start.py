@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from bot.api_client import BackendError, api
-from bot.keyboards import ROLE_KB
+from bot.keyboards import ADMIN_PANEL_KB, ROLE_KB
 from bot.states import Onboarding
 
 router = Router(name="start")
@@ -12,6 +12,14 @@ router = Router(name="start")
 WELCOME = (
     "مرحبًا بك في منصة ربط الحمولات بالشاحنات 🚛📦\n\n"
     "اختر نوع حسابك:"
+)
+
+ADMIN_WELCOME = (
+    "مرحبًا بك 👋\n\n"
+    "هذا الحساب مسجّل كحساب إدارة (Admin) للمنصة.\n"
+    "اضغط الزر أدناه لعرض لوحة التحكم في أي وقت.\n\n"
+    "حسابات الإدارة لا تسجّل كصاحب شاحنة أو صاحب حمولة على نفس الحساب — "
+    "لتجربة النظام من جهة مستخدم عادي، استخدم حساب تيليجرام آخر."
 )
 
 ROLE_LABELS = {"CARRIER": "🚛 صاحب شاحنة", "SHIPPER": "📦 صاحب حمولة"}
@@ -22,6 +30,10 @@ async def cmd_start(message: Message, state: FSMContext):
     await state.clear()
     telegram_id = str(message.from_user.id)
     user = await api.upsert_user(telegram_id, message.from_user.full_name)
+
+    if user["role"] == "ADMIN":
+        await message.answer(ADMIN_WELCOME, reply_markup=ADMIN_PANEL_KB)
+        return
 
     if user["role"] in ("CARRIER", "SHIPPER"):
         await message.answer(
